@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xml>
+	<KeyedFile name="TESTIXR" path="C:/ADX_UDT1/TESTIXR.DAT" keySize="7" recordSize="13">
+		<DefaultRecord>
+			<Field name="barcode" size="7" position="0" type="pd"/>
+			<Field name="itemcode" size="6" position="7" type="pd"/>
+		</DefaultRecord>
+	</KeyedFile>
+</xml>
