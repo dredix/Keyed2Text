@@ -1,32 +1,29 @@
+package keyed2text;
+
 import java.io.*;
 
 /**
  * @author Jeff Heaton(http://www.jeffheaton.com)
  * @version 1.0
  */
-class Bin
-{
+class Bin {
 
     /**
      * Use this constant to specify big-endian integers.
      */
     public static final short BIG_ENDIAN = 1;
-
     /**
      * Use this constant to specify litte-endian constants.
      */
     public static final short LITTLE_ENDIAN = 2;
-
     /**
      * The underlying file.
      */
     protected RandomAccessFile _file;
-
     /**
      * Are we in LITTLE_ENDIAN or BIG_ENDIAN mode.
      */
     protected short _endian;
-
     /**
      * Are we reading signed or unsigned numbers.
      */
@@ -37,8 +34,7 @@ class Bin
      *
      * @param f The file to read/write from/to.
      */
-    public Bin(RandomAccessFile f)
-    {
+    public Bin(RandomAccessFile f) {
         _file = f;
         _endian = LITTLE_ENDIAN;
         _signed = false;
@@ -51,13 +47,13 @@ class Bin
      * @exception java.lang.Exception Will be thrown if this method is not passed either BinaryFile.LITTLE_ENDIAN or BinaryFile.BIG_ENDIAN.
      */
     public void setEndian(short i)
-    throws Exception
-    {
-        if( (i==BIG_ENDIAN) || (i==LITTLE_ENDIAN) )
+            throws Exception {
+        if ((i == BIG_ENDIAN) || (i == LITTLE_ENDIAN)) {
             _endian = i;
-        else
-            throw(new Exception(
-                "Must be BinaryFile.LITTLE_ENDIAN or BinaryFile.BIG_ENDIAN"));
+        } else {
+            throw (new Exception(
+                    "Must be BinaryFile.LITTLE_ENDIAN or BinaryFile.BIG_ENDIAN"));
+        }
     }
 
     /**
@@ -65,8 +61,7 @@ class Bin
      *
      * @return BIG_ENDIAN or LITTLE_ENDIAN to specify the current endian mode.
      */
-    public int getEndian()
-    {
+    public int getEndian() {
         return _endian;
     }
 
@@ -75,9 +70,8 @@ class Bin
      *
      * @param b True if numbers are to be read/written as signed, false if unsigned.
      */
-    public void setSigned(boolean b)
-    {
-    	_signed = b;
+    public void setSigned(boolean b) {
+        _signed = b;
     }
 
     /**
@@ -85,11 +79,9 @@ class Bin
      *
      * @return Returns true for signed, false for unsigned.
      */
-    public boolean getSigned()
-    {
-    	return _signed;
+    public boolean getSigned() {
+        return _signed;
     }
-
 
     /**
      * Reads a fixed length ASCII string.
@@ -99,12 +91,12 @@ class Bin
      * @exception java.io.IOException If an IO exception occurs.
      */
     public String readFixedString(int length)
-        throws java.io.IOException
-    {
+            throws java.io.IOException {
         String rtn = "";
 
-        for(int i=0;i<length;i++)
-            rtn+=(char)_file.readByte();
+        for (int i = 0; i < length; i++) {
+            rtn += (char) _file.readByte();
+        }
         return rtn;
     }
 
@@ -115,26 +107,28 @@ class Bin
      * @param length The length of the area to write to.  Should be larger than the length of the string being written.
      * @exception java.io.IOException If an IO exception occurs.
      */
-    public void writeFixedString(String str,int length)
-        throws java.io.IOException
-    {
-    	int i;
+    public void writeFixedString(String str, int length)
+            throws java.io.IOException {
+        int i;
 
-    	// trim the string back some if needed
+        // trim the string back some if needed
 
-    	if(str.length()>length)
-    		str = str.substring(0,length);
+        if (str.length() > length) {
+            str = str.substring(0, length);
+        }
 
-	   	// write the string
+        // write the string
 
-       	for(i=0;i<str.length();i++)
-    		_file.write( str.charAt(i) );
+        for (i = 0; i < str.length(); i++) {
+            _file.write(str.charAt(i));
+        }
 
-    	// buffer extra space if needed
+        // buffer extra space if needed
 
-    	i=length-str.length();
-    	while((i--)>0)
-    		_file.write(0);
+        i = length - str.length();
+        while ((i--) > 0) {
+            _file.write(0);
+        }
     }
 
     /**
@@ -144,8 +138,7 @@ class Bin
      * @exception java.io.IOException If an IO exception occurs.
      */
     public String readLengthPrefixString()
-        throws java.io.IOException
-    {
+            throws java.io.IOException {
         short len = readUnsignedByte();
         return readFixedString(len);
     }
@@ -157,11 +150,11 @@ class Bin
      * @exception java.io.IOException If an IO exception occurs.
      */
     public void writeLengthPrefixString(String str)
-        throws java.io.IOException
-    {
-    	writeByte((byte)str.length());
-    	for(int i=0;i<str.length();i++)
-    		_file.write( str.charAt(i) );
+            throws java.io.IOException {
+        writeByte((byte) str.length());
+        for (int i = 0; i < str.length(); i++) {
+            _file.write(str.charAt(i));
+        }
     }
 
     /**
@@ -172,12 +165,12 @@ class Bin
      * @exception java.io.IOException If an IO exception occurs.
      */
     public String readFixedZeroString(int length)
-        throws java.io.IOException
-    {
+            throws java.io.IOException {
         String rtn = readFixedString(length);
         int i = rtn.indexOf(0);
-        if(i!=-1)
-        	rtn=rtn.substring(0,i);
+        if (i != -1) {
+            rtn = rtn.substring(0, i);
+        }
         return rtn;
     }
 
@@ -188,10 +181,9 @@ class Bin
      * @param length The length of the buffer to receive the string.
      * @exception java.io.IOException If an IO exception occurs.
      */
-    public void writeFixedZeroString(String str,int length)
-        throws java.io.IOException
-    {
-    	writeFixedString(str,length);
+    public void writeFixedZeroString(String str, int length)
+            throws java.io.IOException {
+        writeFixedString(str, length);
     }
 
     /**
@@ -201,18 +193,17 @@ class Bin
      * @exception java.io.IOException If an IO exception occurs.
      */
     public String readZeroString()
-    	throws java.io.IOException
-    {
-    	String rtn = "";
-    	char ch;
+            throws java.io.IOException {
+        String rtn = "";
+        char ch;
 
-    	do
-    	{
-    		ch = (char)_file.read();
-    		if(ch!=0)
-    			rtn+=ch;
-    	} while(ch!=0);
-    	return rtn;
+        do {
+            ch = (char) _file.read();
+            if (ch != 0) {
+                rtn += ch;
+            }
+        } while (ch != 0);
+        return rtn;
     }
 
     /**
@@ -222,13 +213,12 @@ class Bin
      * @exception java.io.IOException If an IO exception occurs.
      */
     public void writeZeroString(String str)
-    	throws java.io.IOException
-    {
-    	for(int i=0;i<str.length();i++)
-    		_file.write( str.charAt(i) );
-    	writeByte((byte)0);
+            throws java.io.IOException {
+        for (int i = 0; i < str.length(); i++) {
+            _file.write(str.charAt(i));
+        }
+        writeByte((byte) 0);
     }
-
 
     /**
      * Internal function used to read an unsigned byte.  External classes should use the readByte function.
@@ -237,9 +227,8 @@ class Bin
      * @exception java.io.IOException If an IO exception occurs.
      */
     protected short readUnsignedByte()
-    throws java.io.IOException
-    {
-    	return (short)(_file.readByte() & 0xff);
+            throws java.io.IOException {
+        return (short) (_file.readByte() & 0xff);
     }
 
     /**
@@ -249,30 +238,33 @@ class Bin
      * @exception java.io.IOException If an IO exception occurs.
      */
     public short readByte()
-    throws java.io.IOException
-    {
-        if(_signed)
-            return (short)_file.readByte();
-        else
-            return (short)_file.readUnsignedByte();
+            throws java.io.IOException {
+        if (_signed) {
+            return (short) _file.readByte();
+        } else {
+            return (short) _file.readUnsignedByte();
+        }
     }
-    public byte readByteAsByte(){
-    	try{
-    		return _file.readByte();
-    	} catch(Exception e){
-    		e.printStackTrace();
-    		return 00;
-    	}
+
+    public byte readByteAsByte() {
+        try {
+            return _file.readByte();
+        } catch (Exception e) {
+            e.printStackTrace();
+            return 00;
+        }
     }
-    public byte[] readFullyReg(byte datos[]){
-    	try{
-    		_file.readFully(datos);
-    		return datos;
-    	} catch (Exception e){
-    		e.printStackTrace();
-    		return datos;
-    	}
+
+    public byte[] readFullyReg(byte datos[]) {
+        try {
+            _file.readFully(datos);
+            return datos;
+        } catch (Exception e) {
+            e.printStackTrace();
+            return datos;
+        }
     }
+
     /**
      * Writes a single byte to the file.
      *
@@ -280,9 +272,8 @@ class Bin
      * @exception java.io.IOException If an IO exception occurs.
      */
     public void writeByte(short b)
-    throws java.io.IOException
-    {
-    	_file.write(b&0xff);
+            throws java.io.IOException {
+        _file.write(b & 0xff);
     }
 
     /**
@@ -292,47 +283,44 @@ class Bin
      * @exception java.io.IOException If an IO exception occurs.
      */
     public int readWord()
-    throws java.io.IOException
-    {
-    	short a,b;
-    	int result;
+            throws java.io.IOException {
+        short a, b;
+        int result;
 
-    	a=readUnsignedByte();
-    	b=readUnsignedByte();
+        a = readUnsignedByte();
+        b = readUnsignedByte();
 
-    	if(_endian==BIG_ENDIAN)
-        	result = ((a<< 8) | b);
-        else
-        	result = ( a | (b << 8));
+        if (_endian == BIG_ENDIAN) {
+            result = ((a << 8) | b);
+        } else {
+            result = (a | (b << 8));
+        }
 
-        if(_signed)
-        	if( (result&0x8000) == 0x8000 )
-        		result = -(0x10000 - result);
+        if (_signed) {
+            if ((result & 0x8000) == 0x8000) {
+                result = -(0x10000 - result);
+            }
+        }
 
         return result;
     }
+
     /**
      * Write a word to the file.
      *
      * @param w The word to be written to the file.
      * @exception java.io.IOException If an IO exception occurs.
      */
-
     public void writeWord(int w)
-    throws java.io.IOException
-    {
-    	if(_endian==BIG_ENDIAN)
-    	{
-    		_file.write( (w&0xff00)>>8 );
-    		_file.write( w&0xff );
-    	}
-		else
-    	{
-    		_file.write( w&0xff );
-    		_file.write( (w&0xff00)>>8 );
-    	}
+            throws java.io.IOException {
+        if (_endian == BIG_ENDIAN) {
+            _file.write((w & 0xff00) >> 8);
+            _file.write(w & 0xff);
+        } else {
+            _file.write(w & 0xff);
+            _file.write((w & 0xff00) >> 8);
+        }
     }
-
 
     /**
      * Reads a 32-bit double word.  Can be signed or unsigned depending on the signed property.  Can be little or big endian depending on the endian property.
@@ -341,24 +329,26 @@ class Bin
      * @exception java.io.IOException If an IO exception occurs.
      */
     public long readDWord()
-    throws java.io.IOException
-    {
-    	short a,b,c,d;
-    	long result;
+            throws java.io.IOException {
+        short a, b, c, d;
+        long result;
 
-    	a=readUnsignedByte();
-    	b=readUnsignedByte();
-    	c=readUnsignedByte();
-    	d=readUnsignedByte();
+        a = readUnsignedByte();
+        b = readUnsignedByte();
+        c = readUnsignedByte();
+        d = readUnsignedByte();
 
-    	if(_endian==BIG_ENDIAN)
-        	result = ((a<<24) | (b<<16) | (c<< 8) | d);
-        else
-        	result = ( a | (b<<8) | (c<<16) | (d<<24) );
+        if (_endian == BIG_ENDIAN) {
+            result = ((a << 24) | (b << 16) | (c << 8) | d);
+        } else {
+            result = (a | (b << 8) | (c << 16) | (d << 24));
+        }
 
-        if(_signed)
-        	if( (result&0x80000000L) == 0x80000000L )
-        		result = -(0x100000000L - result);
+        if (_signed) {
+            if ((result & 0x80000000L) == 0x80000000L) {
+                result = -(0x100000000L - result);
+            }
+        }
 
         return result;
     }
@@ -370,102 +360,102 @@ class Bin
      * @exception java.io.IOException If an IO exception occurs.
      */
     public void writeDWord(long d)
-    throws java.io.IOException
-    {
-    	if(_endian==BIG_ENDIAN)
-    	{
-    		_file.write( (int)(d&0xff000000) >> 24 );
-    		_file.write( (int)(d&0xff0000) >> 16 );
-    		_file.write( (int)(d&0xff00) >> 8 );
-    		_file.write( (int)(d&0xff));
-    	}
-    	else
-    	{
-    		_file.write( (int)(d&0xff));
-    		_file.write( (int)(d&0xff00) >> 8 );
-    		_file.write( (int)(d&0xff0000) >> 16 );
-    		_file.write( (int)(d&0xff000000) >> 24 );
-    	}
+            throws java.io.IOException {
+        if (_endian == BIG_ENDIAN) {
+            _file.write((int) (d & 0xff000000) >> 24);
+            _file.write((int) (d & 0xff0000) >> 16);
+            _file.write((int) (d & 0xff00) >> 8);
+            _file.write((int) (d & 0xff));
+        } else {
+            _file.write((int) (d & 0xff));
+            _file.write((int) (d & 0xff00) >> 8);
+            _file.write((int) (d & 0xff0000) >> 16);
+            _file.write((int) (d & 0xff000000) >> 24);
+        }
     }
 
-	/**
-	 * Allows the file to be aligned to a specified byte boundary.  For example, if a 4(double word) is specified, the file pointer will be moved to the next double word boundary.
-	 *
-	 * @param a The byte-boundary to align to.
-	 * @exception java.io.IOException If an IO exception occurs.
-	 */
-	public void align(long a)
-	throws java.io.IOException
-	{
-		if( (_file.getFilePointer()%a)>0 )
-		{
-			long pos = _file.getFilePointer()/a;
-    		_file.seek( (pos+1)*a );
-    	}
+    /**
+     * Allows the file to be aligned to a specified byte boundary.  For example, if a 4(double word) is specified, the file pointer will be moved to the next double word boundary.
+     *
+     * @param a The byte-boundary to align to.
+     * @exception java.io.IOException If an IO exception occurs.
+     */
+    public void align(long a)
+            throws java.io.IOException {
+        if ((_file.getFilePointer() % a) > 0) {
+            long pos = _file.getFilePointer() / a;
+            _file.seek((pos + 1) * a);
+        }
     }
-/** Added by Omar Bohorquez    
-	* Allows the file to be aligned one Byte back. For Example, if the file pointer is set to the byte 524, this function will set the pointer to 523
-	*
-  * @exception java.io.IOException If an IO exception occurs.
-  */
-  public void alignOneBack()
-	throws java.io.IOException
-	{
-		long pos = _file.getFilePointer();
-    		_file.seek( (pos-1));
-  }
-  public void alignBack(long i)
-	throws java.io.IOException
-	{
-		_file.seek(i);
-  }
-/** Added by Omar Bohorquez    
-	* Reads the size of the file and return this value.
-	*
-	* @Returns a long with the size of the file.
-  * @exception java.io.IOException If an IO exception occurs.
-  */
-  public long binaryLenght()
-	throws java.io.IOException
-	{
-		long len = _file.length();
-    return len;
-  }
- /** Taken from http://www.cs.princeton.edu/introcs/31datatype/Hex2Decimal.java.html    
-	* Converts a decimal to a hexadecimal.
-	*
-	* @Arg integer decimal to be converted
-	* @Returns a long with the size of the file.
-  * @exception java.io.IOException If an IO exception occurs.
-  */
-  public static String decimal2hex(int d) {
+
+    /** Added by Omar Bohorquez    
+     * Allows the file to be aligned one Byte back. For Example, if the file pointer is set to the byte 524, this function will set the pointer to 523
+     *
+     * @exception java.io.IOException If an IO exception occurs.
+     */
+    public void alignOneBack()
+            throws java.io.IOException {
+        long pos = _file.getFilePointer();
+        _file.seek((pos - 1));
+    }
+
+    public void alignBack(long i)
+            throws java.io.IOException {
+        _file.seek(i);
+    }
+
+    /** Added by Omar Bohorquez    
+     * Reads the size of the file and return this value.
+     *
+     * @Returns a long with the size of the file.
+     * @exception java.io.IOException If an IO exception occurs.
+     */
+    public long binaryLenght()
+            throws java.io.IOException {
+        long len = _file.length();
+        return len;
+    }
+
+    /** Taken from http://www.cs.princeton.edu/introcs/31datatype/Hex2Decimal.java.html    
+     * Converts a decimal to a hexadecimal.
+     *
+     * @Arg integer decimal to be converted
+     * @Returns a long with the size of the file.
+     * @exception java.io.IOException If an IO exception occurs.
+     */
+    public static String decimal2hex(int d) {
         String digits = "0123456789ABCDEF";
-        if (d == 0) return "00";
+        if (d == 0) {
+            return "00";
+        }
         String hex = "";
         while (d > 0) {
             int digit = d % 16;                // rightmost digit
             hex = digits.charAt(digit) + hex;  // string concatenation
             d = d / 16;
         }
-		  return hex;
+        return hex;
     }
-	 public static int hex2decimal(String s) {
+
+    public static int hex2decimal(String s) {
         String digits = "0123456789ABCDEF";
         s = s.toUpperCase();
         int val = 0;
         for (int i = 0; i < s.length(); i++) {
             char c = s.charAt(i);
             int d = digits.indexOf(c);
-            val = 16*val + d;
+            val = 16 * val + d;
         }
         return val;
     }
+
     public void movePointer() throws java.io.IOException {
-	  _file.seek(1);    
+        _file.seek(1);
     }
-    public long posPointer()  throws java.io.IOException {
-		long a;
-		a = _file.getFilePointer();
-		return a;
+
+    public long posPointer() throws java.io.IOException {
+        long a;
+        a = _file.getFilePointer();
+        return a;
     }
 }

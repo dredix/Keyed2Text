@@ -1,3 +1,8 @@
+/*
+ * To change this template, choose Tools | Templates
+ * and open the template in the editor.
+ */
+package keyed2text;
 
 import java.io.*;
 import java.util.*;
@@ -5,6 +10,10 @@ import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import org.w3c.dom.*;
 
+/**
+ *
+ * @author auislc
+ */
 public class Keyed2Text {
 
     final static short endian = Bin.BIG_ENDIAN;
@@ -32,6 +41,9 @@ public class Keyed2Text {
         return value;
     }
 
+    /**
+     * @param args the command line arguments
+     */
     public static void main(String args[]) {
         if (args.length < 2) {
             System.out.println("Not enough arguments. Arg[0] full path of target text file\n Arg[1] full path of xml file for parsing document.");
@@ -82,7 +94,7 @@ public class Keyed2Text {
     }
 
     public static void lukeFileWalker(String path) {
-        String dataId = "", testcase1 = ""; //, testcase2="";
+        String dataId = "", testcase1 = "";
         int cont = 0;
         while (testcase1.length() < keylength * 2) {
             testcase1 = "00" + testcase1;
@@ -145,7 +157,7 @@ public class Keyed2Text {
                                 binaryData[p] & 0xFF), 8, '0'));
                     }
                 } else if (data[2].equals("int")) {
-                    result.append(byteArrayToInt(binaryData, pos, end - pos)); 
+                    result.append(byteArrayToInt(binaryData, pos, end - pos));
                 } else {
                     for (int p = pos; p < end; p++) {
                         hex = Integer.toHexString(binaryData[p] & 0xff);

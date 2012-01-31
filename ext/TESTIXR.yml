@@ -1,0 +1,13 @@
+name:     TESTIXR
+path:     C:/ADX_IDT1/TESTIXR.DAT
+key_size: 7
+rec_size: 13
+fields:
+    - name: barcode
+      offs: 0
+      size: 7
+      type: pd
+    - name: itemcode
+      offs: 7
+      size: 6
+      type: pd
