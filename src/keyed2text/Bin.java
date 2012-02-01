@@ -46,12 +46,11 @@ class Bin {
      * @param i Specify either LITTLE_ENDIAN or BIG_ENDIAN.
      * @exception java.lang.Exception Will be thrown if this method is not passed either BinaryFile.LITTLE_ENDIAN or BinaryFile.BIG_ENDIAN.
      */
-    public void setEndian(short i)
-            throws Exception {
+    public void setEndian(short i) {
         if ((i == BIG_ENDIAN) || (i == LITTLE_ENDIAN)) {
             _endian = i;
         } else {
-            throw (new Exception(
+            throw (new IllegalArgumentException(
                     "Must be BinaryFile.LITTLE_ENDIAN or BinaryFile.BIG_ENDIAN"));
         }
     }
@@ -246,23 +245,13 @@ class Bin {
         }
     }
 
-    public byte readByteAsByte() {
-        try {
-            return _file.readByte();
-        } catch (Exception e) {
-            e.printStackTrace();
-            return 00;
-        }
+    public byte readByteAsByte() throws IOException {
+        return _file.readByte();
     }
 
-    public byte[] readFullyReg(byte datos[]) {
-        try {
-            _file.readFully(datos);
-            return datos;
-        } catch (Exception e) {
-            e.printStackTrace();
-            return datos;
-        }
+    public void readBytes(long pos, byte buffer[]) throws IOException {
+        _file.seek(pos);
+        _file.readFully(buffer);
     }
 
     /**
@@ -410,7 +399,7 @@ class Bin {
      * @Returns a long with the size of the file.
      * @exception java.io.IOException If an IO exception occurs.
      */
-    public long binaryLenght()
+    public long binaryLength()
             throws java.io.IOException {
         long len = _file.length();
         return len;
