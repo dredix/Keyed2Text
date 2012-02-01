@@ -20,55 +20,49 @@ public class KFileConverter {
     public static void convert(String kfDescPath, String textFilePath)
             throws IOException, ParserConfigurationException, SAXException {
 
-        // Get the file descriptor from the XML file
+        // Get the file descriptor from the XML file.
         KFileDescriptor kfd = new KFileDescriptor(kfDescPath);
         
-        // Validate that keyed file and output text file are not the same
+        // Validate that keyed file and output text file are not the same.
         String keyedFilename = new File(kfd.getFileName()).getCanonicalPath();
         String textFilename = new File(textFilePath).getCanonicalPath();
         if (keyedFilename.equals(textFilename)) {
             throw new IllegalArgumentException("Output text file cannot be the same input keyed file");
         }
         
-        // Get record data and make sure is correct
+        // Get record data and make sure is correct.
         int kl = kfd.getKeyLength();
         int rs = kfd.getRecordSize();
         if (kl <= 0 || rs <= 0 || kfd.getFieldCount() <= 0) {
             throw new IllegalArgumentException("Invalid input data");
         }
         
-        // Create appropriate file handlers
+        // Create appropriate file handlers.
         RandomAccessFile file = new RandomAccessFile(keyedFilename, "r");
         BufferedWriter bw = new BufferedWriter(new FileWriter(textFilename));
 
-        // Write the header to the text file
+        // Write the header to the text file.
         writeHeader(kfd, bw);
 
-        // Configure the binary reader
-        Bin bin = new Bin(file);
-        bin.setSigned(false);
-        bin.setEndian(Bin.LITTLE_ENDIAN);
-        bin.movePointer();
-
-        // Setup the null key, so valid records can be identified
-        byte[] readKey = new byte[kl];
+        // Setup the null key, so valid records can be identified.
         byte[] nullKey = new byte[kl];
-        for (int j = 0; j < kl; j++) {
-            nullKey[j] = 0;
-        }
-        byte[] record = new byte[rs];
+        byte[] readKey = new byte[kl]; // record key
+        byte[] record = new byte[rs];  // record contents
 
         // Start cycling through the file.
-        long len = bin.binaryLength();
+        long len = file.length();
         long i = 516;
         long reg = 0;
         while (i < len) {
             while (reg < 512 && reg + rs <= len) {
-                bin.readBytes(i, readKey);
+                // Read the key of the current record.
+                file.seek(i);
+                file.readFully(readKey);
                 // If a valid (non null) key is found, read the record and
                 // write the text equivalent.
                 if (!Arrays.equals(nullKey, readKey)) {
-                    bin.readBytes(i, record);
+                    file.seek(i);
+                    file.readFully(record);
                     writeToText(kfd, record, bw);
                 }
                 // Reposition the file pointer.
