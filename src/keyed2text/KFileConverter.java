@@ -22,21 +22,21 @@ public class KFileConverter {
 
         // Get the file descriptor from the XML file.
         KFileDescriptor kfd = new KFileDescriptor(kfDescPath);
-        
+
         // Validate that keyed file and output text file are not the same.
         String keyedFilename = new File(kfd.getFileName()).getCanonicalPath();
         String textFilename = new File(textFilePath).getCanonicalPath();
         if (keyedFilename.equals(textFilename)) {
             throw new IllegalArgumentException("Output text file cannot be the same input keyed file");
         }
-        
+
         // Get record data and make sure is correct.
         int kl = kfd.getKeyLength();
         int rs = kfd.getRecordSize();
         if (kl <= 0 || rs <= 0 || kfd.getFieldCount() <= 0) {
             throw new IllegalArgumentException("Invalid input data");
         }
-        
+
         // Create appropriate file handlers.
         RandomAccessFile file = new RandomAccessFile(keyedFilename, "r");
         BufferedWriter bw = new BufferedWriter(new FileWriter(textFilename));
@@ -88,6 +88,7 @@ public class KFileConverter {
     private static void writeToText(KFileDescriptor kf, byte[] record, BufferedWriter bw) throws IOException {
         StringBuilder sb = new StringBuilder();
         KFileField field;
+        // Convert each field to text and append it to a resulting string.
         for (int k = 0; k < kf.getFieldCount(); k++) {
             field = kf.getField(k);
             if (field.type.equalsIgnoreCase("ascii")) {
@@ -99,6 +100,7 @@ public class KFileConverter {
                     sb.append(Utils.lPad(Integer.toBinaryString(record[p] & 0xFF), 8, '0'));
                 }
             } else if (field.type.equalsIgnoreCase("int")) {
+                // TODO: Int conversion is not implemented correctly. 
                 for (int p = field.end - 1; p >= field.start; p--) {
                     sb.append(Utils.lPad(Integer.toBinaryString(record[p] & 0xFF), 8, '0'));
                 }
@@ -111,9 +113,17 @@ public class KFileConverter {
             }
             sb.append(SEP);
         }
+        // Delete the last separator on the line. At this stage Which is better:
+        // The char deletion or adding a condition to the char insertion.
         if (sb.charAt(sb.length() - 1) == SEP) {
             sb.deleteCharAt(sb.length() - 1);
         }
+        // Don't write the results if the stream contains a null character, as
+        // it usually indicates a deleted record.
+        if (sb.indexOf("\0") >= 0) {
+            return;
+        }
+        // Write the converted line to the output buffer
         bw.write(sb.toString());
         bw.newLine();
     }

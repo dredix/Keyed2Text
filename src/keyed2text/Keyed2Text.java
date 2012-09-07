@@ -20,6 +20,7 @@ public class Keyed2Text {
      * @param args the command line arguments
      */
     public static void main(String args[]) {
+        // Check command line arguments. If invalid, print syntax and exit.
         if (args.length != 2) {
             Syntax();
             return;
@@ -29,6 +30,7 @@ public class Keyed2Text {
             return;
         }
         try {
+            // Run the conversion
             KFileConverter.convert(args[0], args[1]);
         } catch (ParserConfigurationException ex) {
             Logger.getLogger(Keyed2Text.class.getName()).log(Level.SEVERE, null, ex);
